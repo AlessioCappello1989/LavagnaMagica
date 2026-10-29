@@ -1,6 +1,6 @@
 /* Salva i file della lavagna per usarla anche senza internet.
    Quando pubblichi una nuova versione, cambia il numero qui sotto. */
-const CACHE = 'lavagna-magica-v1';
+const CACHE = 'lavagna-magica-v2';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', (e) => {

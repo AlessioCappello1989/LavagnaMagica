@@ -33,15 +33,17 @@
   --edge-shadow:rgba(29,34,80,.12);
   --toast-bg:#1D2250;
   --toast-fg:#FFFFFF;
+  --save:#2D5BE3;
+  --sheet-bg:rgba(18,22,58,.72);
   --font:"Fredoka",ui-rounded,"Arial Rounded MT Bold","Segoe UI",system-ui,sans-serif;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#12163A;--panel:#1F2552;--chip:#2E3672;--ink:#F3F5FF;--ring:#FFFFFF;--edge-shadow:rgba(0,0,0,.35);color-scheme:dark;
+    --save:#8CAAFF;--bg:#12163A;--panel:#1F2552;--chip:#2E3672;--ink:#F3F5FF;--ring:#FFFFFF;--edge-shadow:rgba(0,0,0,.35);color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#12163A;--panel:#1F2552;--chip:#2E3672;--ink:#F3F5FF;--ring:#FFFFFF;--edge-shadow:rgba(0,0,0,.35);color-scheme:dark;
+  --save:#8CAAFF;--bg:#12163A;--panel:#1F2552;--chip:#2E3672;--ink:#F3F5FF;--ring:#FFFFFF;--edge-shadow:rgba(0,0,0,.35);color-scheme:dark;
 }
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -90,6 +92,7 @@ body{
 .fab svg{width:30px;height:30px}
 .fab-undo{left:12px}
 .fab-clear{right:12px}
+.fab-save{left:84px;color:var(--save)}
 .fab:active{transform:translateY(2px)}
 .fab[aria-disabled="true"]{opacity:.38;cursor:default}
 
@@ -137,6 +140,20 @@ body{
 .size{flex:1;height:46px}
 .size i{display:block;width:var(--d);height:var(--d);border-radius:50%;background:currentColor}
 :is(.btn,.swatch,.sticker,.fab,.toast button):focus-visible{outline:3px solid var(--ring);outline-offset:3px}
+
+/* Finestra di salvataggio */
+.sheet{
+  position:fixed;inset:0;z-index:20;display:flex;overflow:auto;background:var(--sheet-bg);
+  padding:calc(16px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
+}
+.sheet-card{margin:auto;width:min(100%,520px);background:var(--panel);border-radius:28px;padding:14px;display:grid;gap:12px;box-shadow:0 6px 0 var(--edge-shadow)}
+.sheet-img{display:block;justify-self:center;max-width:100%;max-height:min(54vh,520px);width:auto;height:auto;object-fit:contain;background:#fff;border-radius:18px;box-shadow:0 0 0 3px var(--paper-edge);-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto}
+.sheet-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.big{appearance:none;border:0;cursor:pointer;font:inherit;font-size:20px;font-weight:600;min-height:60px;border-radius:20px;display:flex;align-items:center;justify-content:center;gap:10px;touch-action:manipulation;background:var(--chip);color:var(--ink)}
+.big svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.big-save{background:var(--accent);color:var(--on-accent);box-shadow:inset 0 -4px 0 rgba(0,0,0,.14)}
+.big:focus-visible,.sheet-img:focus-visible{outline:3px solid var(--ring);outline-offset:3px}
+.sheet-hint{margin:0;text-align:center;font-size:15px;line-height:1.35;color:var(--ink);opacity:.8;text-wrap:balance}
 
 @media (min-width:760px){
   .colors{grid-template-columns:repeat(10,minmax(0,1fr))}
@@ -189,6 +206,9 @@ body{
     <button class="fab fab-undo" id="undo" type="button" aria-label="Indietro: togli l'ultimo disegno" title="Indietro">
       <svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>
     </button>
+    <button class="fab fab-save" id="save" type="button" aria-label="Salva il disegno" title="Salva" aria-disabled="true">
+      <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg>
+    </button>
     <button class="fab fab-clear" id="clear" type="button" aria-label="Pulisci tutta la lavagna" title="Pulisci tutto">
       <svg viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M9 7V4.5h6V7"/><path d="M6 7l1 13h10l1-13"/><path d="M10 11v6M14 11v6"/></svg>
     </button>
@@ -228,6 +248,20 @@ body{
     </div>
   </section>
 </main>
+
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Salva il disegno" hidden>
+  <div class="sheet-card">
+    <img class="sheet-img" id="sheetImg" alt="Il tuo disegno">
+    <div class="sheet-actions">
+      <button class="big" type="button" id="sheetClose">Chiudi</button>
+      <button class="big big-save" type="button" id="sheetSave">
+        <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg>
+        Salva
+      </button>
+    </div>
+    <p class="sheet-hint">Non si salva? Tieni premuto il dito sul disegno e scegli Salva immagine.</p>
+  </div>
+</div>
 
 <script>
 (function(){
@@ -322,6 +356,12 @@ body{
   var clearBtn=document.getElementById('clear');
   var toast=document.getElementById('toast');
   var restoreBtn=document.getElementById('restore');
+  var saveBtn=document.getElementById('save');
+  var sheet=document.getElementById('sheet');
+  var sheetImg=document.getElementById('sheetImg');
+  var sheetSave=document.getElementById('sheetSave');
+  var sheetClose=document.getElementById('sheetClose');
+  var saveBlob=null, saveUrl='', saveName='';
   var colorsEl=document.getElementById('colors');
   var stickersEl=document.getElementById('stickers');
   var reduce=window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -378,6 +418,7 @@ body{
   });
   function updateUI(){
     undoBtn.setAttribute('aria-disabled',history.length===0?'true':'false');
+    saveBtn.setAttribute('aria-disabled',strokes.length===0?'true':'false');
     hint.hidden=strokes.length>0||cur!==null;
   }
   function showToast(){
@@ -543,10 +584,77 @@ body{
     var a=cv.animate([{opacity:1,transform:'scale(1)'},{opacity:0,transform:'scale(.94)'}],{duration:260,easing:'ease-in'});
     a.onfinish=done;
   }
+  /* ---------- salva il disegno ---------- */
+  function pad(n){return (n<10?'0':'')+n;}
+  function openSheet(){
+    if(busy||activeId!==null||!strokes.length)return;
+    var o=document.createElement('canvas');
+    o.width=cv.width;o.height=cv.height;
+    var c=o.getContext('2d');
+    c.fillStyle='#fff';c.fillRect(0,0,o.width,o.height);c.drawImage(cv,0,0);
+    if(!o.toBlob)return;
+    o.toBlob(function(b){
+      if(!b)return;
+      closeSheet(true);
+      var d=new Date();
+      saveName='disegno-'+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+'-'+pad(d.getHours())+pad(d.getMinutes())+'.png';
+      saveBlob=b;saveUrl=URL.createObjectURL(b);
+      sheetImg.src=saveUrl;sheet.hidden=false;
+      sheetSave.focus();
+    },'image/png');
+  }
+  function closeSheet(quiet){
+    var wasOpen=!sheet.hidden;
+    sheet.hidden=true;sheetImg.removeAttribute('src');
+    if(saveUrl){URL.revokeObjectURL(saveUrl);saveUrl='';}
+    saveBlob=null;
+    if(wasOpen&&!quiet)saveBtn.focus();
+  }
+  function download(){
+    var blob=saveBlob,name=saveName,url=saveUrl;
+    if(!blob)return;
+    function viaLink(){
+      var a=document.createElement('a');
+      a.href=url;a.download=name;
+      document.body.appendChild(a);a.click();a.remove();
+    }
+    /* dentro l'anteprima di Claude il salvataggio passa dal permesso apposito; su un sito normale usa il download del browser */
+    if(window.claude&&window.claude.use){
+      window.claude.use('downloads').then(function(d){
+        if(!d){viaLink();return;}
+        d.save({filename:name,data:blob}).catch(function(){});
+      }).catch(viaLink);
+      return;
+    }
+    viaLink();
+  }
+  function doSave(){
+    if(!saveBlob)return;
+    var coarse=window.matchMedia&&window.matchMedia('(pointer:coarse)').matches;
+    if(coarse&&navigator.canShare&&navigator.share){
+      var file=null;
+      try{file=new File([saveBlob],saveName,{type:'image/png'});}catch(_){}
+      var ok=false;
+      try{ok=!!file&&navigator.canShare({files:[file]});}catch(_){}
+      if(ok){
+        navigator.share({files:[file],title:'Il mio disegno'}).catch(function(e){
+          if(!e||e.name!=='AbortError')download();
+        });
+        return;
+      }
+    }
+    download();
+  }
+  saveBtn.addEventListener('click',openSheet);
+  sheetSave.addEventListener('click',doSave);
+  sheetClose.addEventListener('click',function(){closeSheet();});
+  sheet.addEventListener('click',function(e){if(e.target===sheet)closeSheet();});
+
   undoBtn.addEventListener('click',undo);
   restoreBtn.addEventListener('click',undo);
   clearBtn.addEventListener('click',clearAll);
   window.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&!sheet.hidden){closeSheet();return;}
     if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();undo();}
   });
   document.addEventListener('gesturestart',function(e){e.preventDefault();});

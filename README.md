@@ -6,6 +6,7 @@ Una lavagna da disegno per bambini dai 3 anni in su. Funziona nel browser, su te
 - **Pennelli:** pennarello, arcobaleno magico, stelline e gomma, con tre spessori.
 - **Adesivi:** gatto, cane, coniglio, pulcino, pesce, farfalla, coccinella, albero, abete, margherita, girasole e tulipano. Si trascinano col dito per scegliere dove metterli.
 - **Cancellare:** il cestino pulisce tutto con un tocco e "Rimetti il disegno" lo riporta indietro. La freccia toglie l'ultimo tratto.
+- **Salvare:** l'icona del floppy disk mostra il disegno e lo salva come immagine. Sul telefono si apre la finestra di condivisione (con "Salva immagine"), sul computer il file va nella cartella Download. Se non parte, basta tenere premuto il dito sul disegno e scegliere Salva immagine.
 - **Offline:** dopo la prima apertura funziona anche senza internet e si può aggiungere alla schermata Home.
 
 Non raccoglie dati e non contiene pubblicità: è un solo file `index.html` con tutto il codice dentro.
@@ -52,7 +53,7 @@ Poi vai su `http://localhost:8000`.
 
 ## Pubblicare una modifica
 
-Dopo aver cambiato `index.html`, apri `sw.js` e aumenta il numero nella riga `const CACHE = 'lavagna-magica-v1';` (per esempio `v2`). Così i dispositivi che l'hanno già salvata scaricano la versione nuova alla prossima apertura.
+Dopo aver cambiato `index.html`, apri `sw.js` e aumenta il numero nella riga `const CACHE = 'lavagna-magica-v2';` (per esempio `v3`). Così i dispositivi che l'hanno già salvata scaricano la versione nuova alla prossima apertura.
 
 ## Cosa c'è nella cartella
 
